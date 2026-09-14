@@ -1,0 +1,7 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<!DOCTYPE html><html lang="es"><head><title>Dashboard // UNTEC</title><link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css"></head><body>
+<%@ include file="partials/nav.jspf" %>
+<main class="page"><header class="page-header"><p class="eyebrow">COMMAND CENTER / 01</p><h1>Hola, <c:out value="${sessionScope.usuarioLogueado.nombre}" />.</h1><p>Tu biblioteca digital está lista para la próxima lectura.</p></header>
+<section class="stats"><article class="stat"><span>LIBROS EN RED</span><strong><c:out value="${totalLibros}" /></strong></article><article class="stat"><span>DISPONIBLES</span><strong><c:out value="${librosDisponibles}" /></strong></article><article class="stat"><span>PRÉSTAMOS ACTIVOS</span><strong><c:out value="${prestamosActivos}" /></strong></article></section>
+<section class="panel welcome"><div><p class="panel-kicker">SESSION STATUS</p><h2><c:out value="${sessionScope.usuarioLogueado.rol}" /></h2><p>Accede al catálogo para explorar el acervo universitario.</p></div><a class="button button-primary" href="${pageContext.request.contextPath}/app/libros">VER CATÁLOGO <span>→</span></a></section></main></body></html>
