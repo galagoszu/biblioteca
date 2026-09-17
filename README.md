@@ -1,8 +1,8 @@
 # 📚 Biblioteca Digital UNTEC
 
-Aplicación web desarrollada para el **Módulo 5 del Bootcamp Full Stack Java Trainee**, orientada a la gestión de una biblioteca digital mediante una arquitectura MVC.
+Aplicación web desarrollada para el **Módulo 5 del Bootcamp Full Stack Java Trainee**, orientada a la gestión de una biblioteca digital mediante una arquitectura **MVC (Model - View - Controller)**.
 
-El sistema permite administrar libros, usuarios, préstamos y devoluciones, incorporando autenticación, manejo de sesiones y control de acceso según el rol del usuario.
+El sistema permite administrar libros, usuarios, préstamos y devoluciones, incorporando autenticación, manejo de sesiones, control de acceso según el rol del usuario y gestión del estado activo/inactivo de los usuarios.
 
 ---
 
@@ -18,41 +18,181 @@ La aplicación permite:
 * Registrar devoluciones.
 * Controlar la disponibilidad de los libros.
 * Gestionar permisos según el tipo de usuario.
+* Activar y desactivar usuarios.
 * Mantener sesiones de usuario mediante `HttpSession`.
 
-El proyecto implementa una arquitectura **MVC (Model - View - Controller)** junto con el patrón **DAO** para separar la lógica de negocio, presentación y acceso a datos.
+El proyecto implementa una arquitectura **MVC** junto con el patrón **DAO (Data Access Object)** para separar la lógica de negocio, presentación y acceso a datos.
 
 ---
 
-## ✨ Funcionalidades
+# ✨ Funcionalidades
 
-### 🔐 Autenticación y usuarios
+## 🔐 Autenticación y usuarios
 
 * Inicio de sesión.
 * Cierre de sesión.
 * Manejo de sesiones mediante `HttpSession`.
 * Control de acceso según el rol del usuario.
-* Usuarios activos e inactivos.
+* Gestión de usuarios por parte del bibliotecario.
+* Activación y desactivación de usuarios.
+* Control del estado del usuario mediante el campo `activo`.
+* Restricción de nuevos préstamos para usuarios inactivos.
+* Permiso para realizar devoluciones aun cuando el usuario esté inactivo.
 
-### 📚 Gestión de libros
+---
+
+## 👥 Gestión de usuarios
+
+El sistema permite al usuario con rol `BIBLIOTECARIO` administrar el estado de los usuarios registrados.
+
+La gestión se realiza desde una vista específica de usuarios y permite:
+
+* Visualizar usuarios cuyo rol sea `USUARIO`.
+* Consultar nombre.
+* Consultar correo electrónico.
+* Consultar el estado actual.
+* Activar usuarios.
+* Desactivar usuarios.
+* Guardar inmediatamente el cambio de estado en la base de datos.
+
+El bibliotecario no aparece dentro de la lista de usuarios administrables.
+
+### 🔄 Activación y desactivación
+
+El estado del usuario se controla mediante el campo:
+
+```text
+activo
+```
+
+Los valores utilizados son:
+
+```text
+TRUE  → Usuario activo
+FALSE → Usuario inactivo
+```
+
+La activación o desactivación no elimina al usuario ni modifica sus datos personales, contraseña o rol.
+
+El cambio se almacena directamente en la base de datos mediante una actualización del registro correspondiente.
+
+---
+
+## 🟢 Usuario activo
+
+Cuando un usuario se encuentra activo puede:
+
+* Iniciar sesión.
+* Acceder al dashboard.
+* Consultar el catálogo.
+* Navegar por la aplicación.
+* Consultar información de los libros.
+* Solicitar nuevos préstamos.
+* Devolver libros que tenga actualmente prestados.
+
+El comportamiento del usuario activo mantiene la funcionalidad normal de la aplicación.
+
+---
+
+## 🔴 Usuario inactivo
+
+Un usuario inactivo no queda completamente bloqueado de la aplicación.
+
+Puede:
+
+* Iniciar sesión.
+* Acceder al dashboard.
+* Consultar el catálogo.
+* Navegar por las páginas permitidas.
+* Consultar información de los libros.
+* Devolver libros que tenga actualmente prestados.
+
+Sin embargo:
+
+* No puede solicitar nuevos préstamos.
+* El botón para solicitar un préstamo aparece deshabilitado.
+* El backend también valida el estado del usuario antes de crear un nuevo préstamo.
+
+La restricción no se aplica a las devoluciones.
+
+Por lo tanto:
+
+```text
+USUARIO ACTIVO
+├── Puede navegar
+├── Puede consultar catálogo
+├── Puede solicitar préstamos
+└── Puede devolver préstamos
+
+USUARIO INACTIVO
+├── Puede navegar
+├── Puede consultar catálogo
+├── NO puede solicitar nuevos préstamos
+└── Puede devolver préstamos existentes
+```
+
+---
+
+## 📊 Estado de sesión
+
+El dashboard muestra dinámicamente el estado del usuario autenticado mediante la sección:
+
+```text
+SESSION STATUS
+```
+
+Para un usuario activo:
+
+```text
+USUARIO · ACTIVO
+```
+
+Para un usuario inactivo:
+
+```text
+USUARIO · INACTIVO
+```
+
+Cuando el usuario se encuentra inactivo, además se muestra el mensaje:
+
+> Tu cuenta está desactivada. Para activar tu usuario, acércate al bibliotecario.
+
+El estado se obtiene dinámicamente desde la información del usuario autenticado y no se encuentra escrito de forma fija en la vista.
+
+---
+
+## 📚 Gestión de libros
 
 * Visualización del catálogo.
 * Información de título, autor, ISBN, año y género.
 * Control de disponibilidad.
 * Gestión del catálogo para usuarios con rol `BIBLIOTECARIO`.
 
-### 🔄 Préstamos y devoluciones
+---
+
+## 🔄 Préstamos y devoluciones
 
 * Registro de préstamos.
 * Registro de devoluciones.
 * Asociación entre usuarios y libros.
 * Control de disponibilidad de los libros.
+* Validación del estado del usuario antes de registrar nuevos préstamos.
+* Permiso de devolución para usuarios inactivos.
 
-### 🎨 Interfaz
+La validación del estado activo se aplica solamente al momento de crear un nuevo préstamo.
+
+---
+
+# 🎨 Interfaz
+
+La aplicación cuenta con:
 
 * Diseño web responsive.
 * Interfaz desarrollada con HTML5 y CSS3.
-* Estética inspirada en un concepto **cyberpunk universitario**.
+* Estética inspirada en un concepto cyberpunk universitario.
+* Fondo oscuro.
+* Detalles en verde neón.
+* Diseño consistente entre las diferentes vistas de la aplicación.
 
 ---
 
@@ -71,6 +211,7 @@ El proyecto implementa una arquitectura **MVC (Model - View - Controller)** junt
 | **Apache Tomcat**   | Servidor de aplicaciones               |
 | **HTML5**           | Estructura de las páginas              |
 | **CSS3**            | Diseño y estilos                       |
+| **HttpSession**     | Gestión de sesiones                    |
 
 ---
 
@@ -89,7 +230,7 @@ Para ejecutar este proyecto en otro computador es necesario:
 
 ---
 
-## 1. Clonar el repositorio
+# 1️⃣ Clonar el repositorio
 
 Desde una terminal:
 
@@ -107,7 +248,7 @@ También es posible utilizar la opción **Clone Repository** de Visual Studio Co
 
 ---
 
-## 2. Crear la base de datos
+# 2️⃣ Crear la base de datos
 
 Abrir MariaDB utilizando el cliente de preferencia.
 
@@ -125,7 +266,7 @@ USE biblioteca_untec;
 
 ---
 
-## 3. Crear las tablas
+# 3️⃣ Crear las tablas
 
 Ejecutar las siguientes consultas SQL:
 
@@ -166,9 +307,17 @@ CREATE TABLE prestamos (
 );
 ```
 
+El campo:
+
+```sql
+activo BOOLEAN NOT NULL DEFAULT TRUE
+```
+
+permite controlar el estado de los usuarios.
+
 ---
 
-## 4. Crear los usuarios iniciales
+# 4️⃣ Crear los usuarios iniciales
 
 Ejecutar:
 
@@ -200,7 +349,7 @@ VALUES
 
 ---
 
-## 5. Crear los libros iniciales
+# 5️⃣ Crear los libros iniciales
 
 Ejecutar:
 
@@ -300,7 +449,7 @@ por la contraseña correspondiente al usuario de MariaDB instalado localmente.
 
 ---
 
-## 🔌 Puerto de MariaDB
+# 🔌 Puerto de MariaDB
 
 El proyecto está configurado inicialmente para utilizar el puerto:
 
@@ -420,7 +569,7 @@ admin@untec.cl
 BIBLIOTECARIO
 ```
 
-Este usuario permite probar las funcionalidades correspondientes al bibliotecario y la gestión del catálogo.
+Este usuario permite probar las funcionalidades correspondientes al bibliotecario, la gestión del catálogo y la gestión de usuarios.
 
 ---
 
@@ -480,7 +629,7 @@ USUARIO
 
 ---
 
-### 🔑 Contraseña inicial
+# 🔑 Contraseña inicial
 
 Los tres usuarios utilizan la misma contraseña inicial:
 
@@ -507,7 +656,12 @@ El usuario posee el rol:
 BIBLIOTECARIO
 ```
 
-por lo que permite probar las funcionalidades de administración y gestión del catálogo.
+por lo que permite probar las funcionalidades de:
+
+* Administración.
+* Gestión del catálogo.
+* Gestión de usuarios.
+* Activación y desactivación de usuarios.
 
 Posteriormente, cerrar sesión y probar con un usuario normal:
 
@@ -533,6 +687,106 @@ y permiten probar las funcionalidades correspondientes a un usuario normal, incl
 
 ---
 
+# 🧪 Prueba de activación y desactivación de usuarios
+
+Para probar la funcionalidad de gestión de usuarios:
+
+### 1. Iniciar sesión como bibliotecario
+
+Utilizar:
+
+```text
+admin@untec.cl
+```
+
+con contraseña:
+
+```text
+123456
+```
+
+---
+
+### 2. Ingresar a la gestión de usuarios
+
+El bibliotecario puede visualizar los usuarios que poseen el rol:
+
+```text
+USUARIO
+```
+
+---
+
+### 3. Desactivar un usuario
+
+Utilizar el control de activación/desactivación disponible en la vista de usuarios.
+
+El cambio se guarda en la base de datos.
+
+---
+
+### 4. Iniciar sesión con el usuario desactivado
+
+El usuario podrá iniciar sesión normalmente.
+
+---
+
+### 5. Revisar el dashboard
+
+El estado debe aparecer como:
+
+```text
+USUARIO · INACTIVO
+```
+
+Además, debe mostrarse:
+
+> Tu cuenta está desactivada. Para activar tu usuario, acércate al bibliotecario.
+
+---
+
+### 6. Revisar el catálogo
+
+El usuario inactivo debe poder:
+
+* Acceder al catálogo.
+* Navegar por la aplicación.
+* Consultar información de los libros.
+
+---
+
+### 7. Intentar solicitar un préstamo
+
+El botón para solicitar un nuevo préstamo debe encontrarse deshabilitado.
+
+Además, el backend debe impedir que se registre un nuevo préstamo para un usuario inactivo.
+
+---
+
+### 8. Realizar una devolución
+
+Si el usuario ya posee un préstamo activo, debe poder devolver el libro aunque su cuenta se encuentre inactiva.
+
+---
+
+### 9. Reactivar el usuario
+
+Volver a ingresar como bibliotecario y activar nuevamente al usuario.
+
+---
+
+### 10. Comprobar el estado activo
+
+El usuario debería volver a mostrar:
+
+```text
+USUARIO · ACTIVO
+```
+
+y recuperar la posibilidad de solicitar nuevos préstamos.
+
+---
+
 # 🏗️ Arquitectura del proyecto
 
 El proyecto utiliza una arquitectura:
@@ -544,29 +798,33 @@ MVC
 
 La estructura separa las principales responsabilidades de la aplicación.
 
-### Model
+## Model
 
 Representa las entidades y datos utilizados por el sistema.
 
-### View
+## View
 
 Utiliza **JSP + JSTL** para presentar la información al usuario.
 
-### Controller
+## Controller
 
 Utiliza **Jakarta Servlets** para gestionar las solicitudes HTTP y coordinar las operaciones de la aplicación.
 
-### DAO
+## DAO
 
 Implementa el patrón **Data Access Object**, encargado de gestionar el acceso a la base de datos mediante JDBC.
 
-### Session
+El `UsuarioDAO` permite trabajar con la información de los usuarios y actualizar su estado de activación/desactivación.
+
+## Session
 
 Utiliza `HttpSession` para controlar las sesiones y mantener la información del usuario autenticado.
 
+La información utilizada por la sesión permite identificar, entre otros datos, el usuario, su rol y su estado de activación.
+
 ---
 
-## 📂 Estructura conceptual
+# 📂 Estructura conceptual
 
 ```text
 biblioteca/
@@ -574,13 +832,24 @@ biblioteca/
 ├── src/
 │   └── main/
 │       ├── java/
-│       │   └── ...
+│       │   └── cl/
+│       │       └── m5proyecto/
+│       │           └── biblioteca/
+│       │               ├── controller/
+│       │               ├── dao/
+│       │               ├── model/
+│       │               └── ...
 │       │
 │       ├── resources/
 │       │   └── db.properties
 │       │
 │       └── webapp/
 │           ├── WEB-INF/
+│           ├── views/
+│           │   ├── home.jsp
+│           │   ├── libros.jsp
+│           │   ├── usuarios.jsp
+│           │   └── ...
 │           ├── index.jsp
 │           └── ...
 │
@@ -620,6 +889,141 @@ Para un entorno de producción, las contraseñas de los usuarios deberían almac
 
 ---
 
+# 🗄️ Modelo de datos
+
+La aplicación utiliza tres entidades principales:
+
+```text
+USUARIOS
+   │
+   │ 1:N
+   ▼
+PRESTAMOS
+   │
+   │ N:1
+   ▼
+LIBROS
+```
+
+### Usuarios
+
+Contiene la información de las personas registradas en el sistema, incluyendo:
+
+* Identificador.
+* Nombre.
+* Correo electrónico.
+* Contraseña.
+* Rol.
+* Estado activo/inactivo.
+
+### Libros
+
+Contiene la información del catálogo:
+
+* Identificador.
+* Título.
+* Autor.
+* ISBN.
+* Año de publicación.
+* Género.
+* Disponibilidad.
+
+### Préstamos
+
+Relaciona usuarios y libros y permite registrar:
+
+* Usuario que realiza el préstamo.
+* Libro prestado.
+* Fecha del préstamo.
+* Fecha de devolución.
+
+---
+
+# 🔄 Flujo general de funcionamiento
+
+```text
+                    ┌─────────────────┐
+                    │      LOGIN      │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │   HttpSession   │
+                    └────────┬────────┘
+                             │
+              ┌──────────────┴──────────────┐
+              │                             │
+              ▼                             ▼
+      ┌───────────────┐             ┌───────────────┐
+      │ BIBLIOTECARIO │             │    USUARIO    │
+      └───────┬───────┘             └───────┬───────┘
+              │                             │
+              ▼                             ▼
+     Gestión de usuarios             Catálogo / préstamos
+              │                             │
+              ▼                             ▼
+     Activar / desactivar          Validar estado activo
+                                            │
+                              ┌─────────────┴─────────────┐
+                              │                           │
+                              ▼                           ▼
+                       Usuario activo              Usuario inactivo
+                              │                           │
+                              ▼                           ▼
+                       Nuevo préstamo             Sin nuevo préstamo
+                              │                           │
+                              └─────────────┬─────────────┘
+                                            ▼
+                                       Devolución
+```
+
+---
+
+# 🧩 Reglas de negocio principales
+
+El sistema considera las siguientes reglas:
+
+1. Solo los usuarios con rol `BIBLIOTECARIO` pueden gestionar usuarios.
+2. Los usuarios administrables corresponden al rol `USUARIO`.
+3. El bibliotecario no aparece dentro de la lista de usuarios administrables.
+4. Un usuario inactivo puede iniciar sesión.
+5. Un usuario inactivo puede navegar por las secciones permitidas.
+6. Un usuario inactivo puede consultar el catálogo.
+7. Un usuario inactivo no puede solicitar nuevos préstamos.
+8. La interfaz deshabilita la opción de solicitar préstamos para usuarios inactivos.
+9. El backend también valida el estado antes de registrar un préstamo.
+10. Un usuario inactivo puede devolver préstamos existentes.
+11. Reactivar un usuario permite recuperar la posibilidad de solicitar nuevos préstamos.
+12. La activación o desactivación no elimina ni modifica los demás datos del usuario.
+
+---
+
+# 🧰 Requisitos previos
+
+Antes de ejecutar el proyecto se recomienda contar con:
+
+* **Java JDK 17**
+* **Apache Maven**
+* **MariaDB**
+* **Apache Tomcat**
+* **Visual Studio Code** u otro IDE compatible
+* Extensión de Tomcat para Visual Studio Code, si se desea realizar el deployment desde el IDE.
+
+---
+
+# 📌 Consideraciones
+
+* El puerto predeterminado de Tomcat utilizado en este README es `8080`.
+* El puerto de MariaDB configurado inicialmente es `3307`.
+* La base de datos debe llamarse `biblioteca_untec`.
+* El archivo `db.properties` debe configurarse de forma local.
+* Las credenciales incluidas son únicamente para pruebas académicas.
+* El proyecto no debe utilizar estas credenciales en un entorno productivo.
+* Las contraseñas de producción deben almacenarse mediante mecanismos seguros de hashing.
+* El archivo `db.properties` debe mantenerse fuera del repositorio público.
+
+---
+
 # 🎓 Proyecto académico
 
 **Bootcamp Full Stack Java Trainee**
@@ -632,8 +1036,9 @@ Para un entorno de producción, las contraseñas de los usuarios deberían almac
 
 ---
 
-## 👨‍💻 Autor
+# 👨‍💻 Autor
 
 **Gabriel Lagos**
 
 Proyecto desarrollado con fines académicos como parte del proceso de formación **Full Stack Java**.
+
